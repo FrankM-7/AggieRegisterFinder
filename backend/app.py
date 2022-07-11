@@ -11,17 +11,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 
-# for SMS
-import email, smtplib, ssl
-from providers import PROVIDERS
-# used for MMS
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from os.path import basename
-
-
 f = open("../credentials.json")
 data = json.load(f)
 
@@ -125,82 +114,4 @@ def check_seats():
         data.append({'subject' : i['subject'], 'courseNumber' : i['courseNumber'], 'courseTitle' : i['courseTitle'], 'courseReferenceNumber' : i['courseReferenceNumber'], 'seatsAvailable' : i['seatsAvailable']})
         print(str(i['courseNumber']) + ' ' + str(i['seatsAvailable']))
 
-    return { 'data' : data}
-
-
-def send_sms_via_email(
-    number: str,
-    message: str,
-    provider: str,
-    sender_credentials: tuple,
-    subject: str = "sent using etext",
-    smtp_server: str = "smtp.gmail.com",
-    smtp_port: int = 465,
-):
-    sender_email, email_password = sender_credentials
-    receiver_email = f'{number}@{PROVIDERS.get(provider).get("sms")}'
-
-    email_message = f"Subject:{subject}\nTo:{receiver_email}\n{message}"
-
-    with smtplib.SMTP_SSL(
-        smtp_server, smtp_port, context=ssl.create_default_context()
-    ) as email:
-        email.login(sender_email, email_password)
-        email.sendmail(sender_email, receiver_email, email_message)
-
-def send_mms_via_email(
-    number: str,
-    message: str,
-    file_path: str,
-    mime_maintype: str,
-    mime_subtype: str,
-    provider: str,
-    sender_credentials: tuple,
-    subject: str = "sent using etext",
-    smtp_server: str = "smtp.gmail.com",
-    smtp_port: int = 465,
-):
-
-    sender_email, email_password = sender_credentials
-    receiver_email = f'{number}@{PROVIDERS.get(provider).get("sms")}'
-
-    email_message=MIMEMultipart()
-    email_message["Subject"] = subject
-    email_message["From"] = sender_email
-    email_message["To"] = receiver_email
-
-    email_message.attach(MIMEText(message, "plain"))
-
-    with open(file_path, "rb") as attachment:
-        part = MIMEBase(mime_maintype, mime_subtype)
-        part.set_payload(attachment.read())
-
-        encoders.encode_base64(part)
-        part.add_header(
-            "Content-Disposition",
-            f"attachment; filename={basename(file_path)}",
-        )
-
-        email_message.attach(part)
-
-    text = email_message.as_string()
-
-    with smtplib.SMTP_SSL(
-        smtp_server, smtp_port, context=ssl.create_default_context()
-    ) as email:
-        email.login(sender_email, email_password)
-        email.sendmail(sender_email, receiver_email, text)
-
-
-@app.route("/sendmessage")
-def send_message():
-    number = "2104000374"
-    message = "did you load up valorant yet!"
-    provider = "AT&T"
-
-    sender_credentials = ("tamuregisteraggie@gmail.com", "mcodbuyplbuwmxyd")
-
-    # SMS
-    send_sms_via_email(number, message, provider, sender_credentials)
-
-    return {'message_sent' : 'true'}
+    return { 'data' : data }
