@@ -10,8 +10,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
+import os
 
-f = open("credentials.json")
+f = open(os.environ['AGGIE_REGISTER_FINDER_CREDENTIALS'])
 data = json.load(f)
 
 client = pymongo.MongoClient("mongodb+srv://" + urllib.parse.quote(data['username']) + ":" + urllib.parse.quote(data['password']) + "@cluster0.k7a8t4b.mongodb.net/?retryWrites=true&w=majority")
