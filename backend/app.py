@@ -48,8 +48,8 @@ def get_courses(department, course_number):
 
 @app.route("/howdy", methods=['POST'])
 def go_howdy():
-    username = 'someusername'
-    password = 'somepassword'
+    username = ''
+    password = ''
     crnString = ""
     
     for i in request.json['crns']:
@@ -60,11 +60,11 @@ def go_howdy():
     driver.get("https://cas.tamu.edu/cas/login?TARGET=https%3A%2F%2Fcompassxe-ssb.tamu.edu%2FStudentRegistrationSsb%2Flogin%2Fcas")
     
     # wait for the page to load
-    # WebDriverWait(driver, 10000).until(EC.presence_of_element_located((By.ID, 'username')))
+    WebDriverWait(driver, 10000).until(EC.presence_of_element_located((By.ID, 'username')))
 
     # add login
-    # driver.find_element(By.ID, 'username').send_keys(username)
-    # driver.find_element(By.ID, 'password').send_keys(password)
+    driver.find_element(By.ID, 'username').send_keys(username)
+    driver.find_element(By.ID, 'password').send_keys(password)
     # driver.find_element(By.CLASS_NAME, 'thinking-anim').click()
 
     # wait for register page to load
@@ -97,6 +97,8 @@ def go_howdy():
         s.cookies.set(i['name'], i['value'], domain=i['domain'])
     response = json.loads(s.get('https://compassxe-ssb.tamu.edu/StudentRegistrationSsb/ssb/searchResults').text)
 
+    print(response)
+
     data = []
     for i in response['data']:
         data.append({'subject' : i['subject'], 'courseNumber' : i['courseNumber'], 'courseTitle' : i['courseTitle'], 'courseReferenceNumber' : i['courseReferenceNumber'], 'seatsA' : i['seatsAvailable']})
@@ -118,10 +120,12 @@ def check_seats():
         s.cookies.set(i['name'], i['value'], domain=i['domain'])
 
     response = json.loads(s.get('https://compassxe-ssb.tamu.edu/StudentRegistrationSsb/ssb/searchResults').text)
+    data = []
     for i in response['data']:
+        data.append({'subject' : i['subject'], 'courseNumber' : i['courseNumber'], 'courseTitle' : i['courseTitle'], 'courseReferenceNumber' : i['courseReferenceNumber'], 'seatsAvailable' : i['seatsAvailable']})
         print(str(i['courseNumber']) + ' ' + str(i['seatsAvailable']))
 
-    return {'check' : 'something'}
+    return { 'data' : data}
 
 
 def send_sms_via_email(
