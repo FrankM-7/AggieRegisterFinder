@@ -12,10 +12,10 @@ from selenium.webdriver.support import expected_conditions as EC
 import requests
 import os
 
-f = open(os.environ['AGGIE_REGISTER_FINDER_CREDENTIALS'])
-data = json.load(f)
-
-client = pymongo.MongoClient("mongodb+srv://" + urllib.parse.quote(data['username']) + ":" + urllib.parse.quote(data['password']) + "@cluster0.k7a8t4b.mongodb.net/?retryWrites=true&w=majority")
+db = os.environ['AGGIE_REGISTER_FINDER_CREDENTIALS_DB']
+username = os.environ['AGGIE_REGISTER_FINDER_CREDENTIALS_USERNAME']
+password = os.environ['AGGIE_REGISTER_FINDER_CREDENTIALS_PASSWORD']
+client = pymongo.MongoClient("mongodb+srv://" + urllib.parse.quote(username) + ":" + urllib.parse.quote(password) + db)
 
 mydb = client["tamudb"]
 mycol = mydb["courses"]
