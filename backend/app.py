@@ -38,8 +38,8 @@ def get_courses(department, course_number):
 
 @app.route("/howdy", methods=['POST'])
 def go_howdy():
-    username = ''
-    password = ''
+    username = 'FrankM-7'
+    password = 'Messi@11'
     crnString = ""
     
     for i in request.json['crns']:
